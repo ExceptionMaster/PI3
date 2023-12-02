@@ -1,31 +1,19 @@
 package adda.util;
 
+import java.util.Arrays;
 import java.util.Set;
-
-import us.lsi.grafos.datos.Carretera;
+import java.util.stream.Collectors;
 
 public record Usuario(String nombre, Double indiceActividad, Set<String> aficiones) {
-	private static int num =0;
-	
 	public static Usuario ofFormat(String[] formato) {
-		Double km = Double.parseDouble(formato[3]);
-		String nomb = formato[2];		
-		Integer id = num;
-		num++;
-		return new Carretera(id, km, nomb);
+		String nombre = formato[0];
+		Double indiceActividad = Double.parseDouble(formato[1]);
+		Set<String> aficiones = Arrays.stream(formato[2].replace("[]", "").split(";")).collect(Collectors.toSet());
+		return new Usuario(nombre, indiceActividad, aficiones);
 	}
-	
-	public static Carretera of(Double kms) {
-		Double km = kms;
-		String nomb = null;		
-		Integer id = num;
-		num++;
-		return new Carretera(id, km, nomb);
-	}
-	
+		
 	@Override
 	public String toString() {
-		String nn = this.nombre==null?"":this.nombre+",";
-		return "("+nn+this.km+")";
+		return this.nombre+"("+this.indiceActividad+")";
 	}
 }
