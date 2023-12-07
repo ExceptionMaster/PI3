@@ -8,7 +8,11 @@ public record Usuario(String nombre, Double indiceActividad, Set<String> aficion
 	public static Usuario ofFormat(String[] formato) {
 		String nombre = formato[0];
 		Double indiceActividad = Double.parseDouble(formato[1]);
-		Set<String> aficiones = Arrays.stream(formato[2].replace("[]", "").split(";")).collect(Collectors.toSet());
+		Set<String> aficiones = Arrays.stream(formato[2].replace("[", "").replace("]", "").split(";")).collect(Collectors.toSet());
+		return new Usuario(nombre, indiceActividad, aficiones);
+	}
+	
+	public static Usuario of(String nombre, Double indiceActividad, Set<String> aficiones) {
 		return new Usuario(nombre, indiceActividad, aficiones);
 	}
 		
