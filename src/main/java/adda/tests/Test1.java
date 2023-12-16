@@ -1,7 +1,13 @@
 package adda.tests;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -81,24 +87,61 @@ public class Test1 {
 				Interaccion::ofFormat, 
 				() -> Graphs2.simpleDirectedWeightedGraph(),
 				a -> a.indiceInteraccion()
-		);
+				);
 		
 		Graph<Usuario, Interaccion> undirectedGraph = new AsUndirectedGraph<>(g);
 		VertexCoverAlgorithm<Usuario> vc = new GreedyVCImpl<Usuario, Interaccion>(undirectedGraph,Map2.of(x->x.indiceActividad()));
 		VertexCover<Usuario> vertexCover = vc.getVertexCover();
-
+		
 		// Imprimir el conjunto mínimo de usuarios
-        System.out.println("    "+vertexCover);
-        GraphColors.toDot(
+		System.out.println("    "+vertexCover);
+		GraphColors.toDot(
+				g,
+				"./exports/ejercicio1c_" + nEj1 + ".dot",
+				v -> v.nombre(),
+				e -> e.indiceInteraccion().toString(),
+				v -> GraphColors.colorIf(Color.red, Color.black, vertexCover.contains(v)),
+				e -> GraphColors.color(Color.black)
+				
+				);
+		nEj1++;
+	}
+	
+	public static void apartadoD(String fichero) {
+		System.out.println("Usando fichero de datos: ejercicio1_"+nEj1);
+		SimpleDirectedWeightedGraph<Usuario, Interaccion> g = GraphsReader.newGraph(
+				fichero, 
+				Usuario::ofFormat, 
+				Interaccion::ofFormat, 
+				() -> Graphs2.simpleDirectedWeightedGraph(),
+				a -> a.indiceInteraccion()
+		);
+						
+		Map<Usuario,Double> aux = new HashMap<>();
+		for(Usuario u:g.vertexSet()) {
+			if(g.inDegreeOf(u) >= 5 && u.aficiones().size() > 3 && u.indiceActividad() > 4) {
+				aux.put(u, calcularMedia(g,u));
+			}
+			
+		}
+		
+		
+		
+        /*GraphColors.toDot(
                 g,
-                "./exports/ejercicio1c_" + nEj1 + ".dot",
+                "./exports/ejercicio1d_" + nEj1 + ".dot",
                 v -> v.nombre(),
                 e -> e.indiceInteraccion().toString(),
-                v -> GraphColors.colorIf(Color.red, Color.black, vertexCover.contains(v)),
+                v -> GraphColors.colorIf(Color.red, Color.black, g2.containsVertex(v)),
                 e -> GraphColors.color(Color.black)
                 
-        );
+        );*/
 		nEj1++;
+	}
+	
+	private static double calcularMedia(Graph<Usuario,Interaccion> g, Usuario u) {
+		Set<Interaccion> aux = g.incomingEdgesOf(u);
+		return aux.stream().collect(Collectors.summingDouble(Interaccion::indiceInteraccion)) / aux.size();
 	}
 	
 	public static void test() {
@@ -116,6 +159,11 @@ public class Test1 {
 		apartadoC("./ficheros/ejercicio1_1.txt");
 		apartadoC("./ficheros/ejercicio1_2.txt");
 		apartadoC("./ficheros/ejercicio1_3.txt");
+		nEj1=1;
+		System.out.println("\n=== APARTADO D ===");
+		apartadoD("./ficheros/ejercicio1_1.txt");
+		apartadoD("./ficheros/ejercicio1_2.txt");
+		apartadoD("./ficheros/ejercicio1_3.txt");
 	}
 
 }
