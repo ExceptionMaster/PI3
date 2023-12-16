@@ -1,12 +1,8 @@
 package adda.tests;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
@@ -116,18 +112,22 @@ public class Test1 {
 				() -> Graphs2.simpleDirectedWeightedGraph(),
 				a -> a.indiceInteraccion()
 		);
-						
-		Map<Usuario,Double> aux = new HashMap<>();
-		for(Usuario u:g.vertexSet()) {
-			if(g.inDegreeOf(u) >= 5 && u.aficiones().size() > 3 && u.indiceActividad() > 4) {
-				aux.put(u, calcularMedia(g,u));
-			}
+		
+		Predicate<Usuario> p = u ->
+			g.inDegreeOf(u)>=5 && u.aficiones().size()>3 &&
+			u.indiceActividad()>4;
+		
+		Graph<Usuario,Interaccion> g2 = Ejercicio1.ejercicio1Alt(
+				g,
+				g.vertexSet().stream()
+				.filter(p)
+				.sorted((u1,u2)-> calcularMedia(u2,g.incomingEdgesOf(u2))
+						.compareTo(calcularMedia(u1,g.incomingEdgesOf(u1))))
+				.limit(2)
+				.collect(Collectors.toSet())
+		);
 			
-		}
-		
-		
-		
-        /*GraphColors.toDot(
+        GraphColors.toDot(
                 g,
                 "./exports/ejercicio1d_" + nEj1 + ".dot",
                 v -> v.nombre(),
@@ -135,13 +135,14 @@ public class Test1 {
                 v -> GraphColors.colorIf(Color.red, Color.black, g2.containsVertex(v)),
                 e -> GraphColors.color(Color.black)
                 
-        );*/
+        );
 		nEj1++;
+		System.out.println("    "+g2);
 	}
 	
-	private static double calcularMedia(Graph<Usuario,Interaccion> g, Usuario u) {
-		Set<Interaccion> aux = g.incomingEdgesOf(u);
-		return aux.stream().collect(Collectors.summingDouble(Interaccion::indiceInteraccion)) / aux.size();
+	private static Double calcularMedia(Usuario u, Set<Interaccion> s) {
+		List<Double> aux =	s.stream().map(Interaccion::indiceInteraccion).toList();
+		return aux.stream().reduce((d1,d2) -> d1+d2).orElse(0.)/aux.size();
 	}
 	
 	public static void test() {

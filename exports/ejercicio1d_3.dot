@@ -15,7 +15,7 @@ strict digraph G {
   14 [ color="black" label="Daniel" ];
   15 [ color="black" label="Javier" ];
   16 [ color="black" label="Maria del Mar" ];
-  17 [ color="black" label="Carmelo" ];
+  17 [ color="red" label="Carmelo" ];
   1 -> 2 [ color="black" label="3.9" ];
   1 -> 14 [ color="black" label="3.7" ];
   1 -> 15 [ color="black" label="4.1" ];
