@@ -179,8 +179,4 @@ public class Test2 {
 		apartadoC("./ficheros/ejercicio2_3.txt",3);
 	}
 	
-	/*public static void main(String[] args) {
-		test();
-	}*/
-
 }
