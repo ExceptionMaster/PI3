@@ -1,14 +1,14 @@
 strict digraph G {
-  1 [ color="green" label="Tarea1" ];
-  2 [ color="black" label="Tarea2" ];
-  3 [ color="black" label="Tarea3" ];
-  4 [ color="green" label="Tarea4" ];
-  5 [ color="green" label="Tarea5" ];
-  6 [ color="green" label="Tarea6" ];
-  7 [ color="green" label="Tarea7" ];
+  1 [ color="magenta" label="Tarea1" ];
+  2 [ color="magenta" label="Tarea2" ];
+  3 [ color="magenta" label="Tarea3" ];
+  4 [ color="magenta" label="Tarea4" ];
+  5 [ color="magenta" label="Tarea5" ];
+  6 [ color="magenta" label="Tarea6" ];
+  7 [ color="magenta" label="Tarea7" ];
   8 [ color="magenta" label="Tarea8" ];
-  9 [ color="green" label="Tarea9" ];
-  10 [ color="green" label="Tarea10" ];
+  9 [ color="black" label="Tarea9" ];
+  10 [ color="black" label="Tarea10" ];
   1 -> 4 [ color="black" label="Relacion-76" ];
   1 -> 5 [ color="black" label="Relacion-77" ];
   1 -> 9 [ color="black" label="Relacion-78" ];

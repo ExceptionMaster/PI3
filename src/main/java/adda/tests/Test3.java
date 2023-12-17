@@ -2,16 +2,14 @@ package adda.tests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -47,54 +45,55 @@ public class Test3 {
 	
 	public static void apartadoB(String fichero, String tarea) {
 		System.out.println("Usando fichero de datos: ejercicio3_"+nEj3);
+		
+		SimpleDirectedGraph<Tarea, RelacionTarea> g = GraphsReader.newGraph(
+				fichero, 
+				Tarea::ofFormat, 
+				RelacionTarea::ofFormat, 
+				() -> Graphs2.simpleDirectedGraph(),
+				null
+		);
+		
+	    Tarea tInicial = g.vertexSet().stream()
+	            .filter(t -> t.nombre().equals(tarea))
+	            .findFirst()
+	            .orElse(null);
 
-        SimpleDirectedGraph<Tarea, RelacionTarea> g = GraphsReader.newGraph(
-                fichero,
-                Tarea::ofFormat,
-                RelacionTarea::ofFormat,
-                () -> Graphs2.simpleDirectedGraph(),
-                null
-        );
+	    List<Tarea> tareas = new ArrayList<>();
+	    Map<Tarea, List<Tarea>> map = new HashMap<>();
+	    List<Tarea> pendientes = new LinkedList<>();
 
-        Set<Tarea> precedentes = encontrarTareasPrecedentes(g, tarea);
+	    pendientes.add(tInicial);
+	    tareas.add(tInicial);
+	    map.put(tInicial, tareas);
 
-        GraphColors.toDot(
+	    while (!pendientes.isEmpty()) {
+	        Tarea tareaActual = pendientes.remove(0);
+
+	        List<Tarea> tareasPrecedentes = g.incomingEdgesOf(tareaActual).stream()
+	                .map(e -> g.getEdgeSource(e))
+	                .toList();
+
+	        for (Tarea t : tareasPrecedentes) {
+	            if (!map.containsKey(t)) {
+	            	tareas.add(t);
+	            	map.put(t, tareas);
+	            	pendientes.add(t);
+	            }
+	        }
+	    }
+
+	    GraphColors.toDot(
                 g,
                 "./exports/ejercicio3b_"+nEj3+".dot",
                 v -> v.nombre(),
                 e -> e.nombre(),
-                v -> {
-                    if (v.nombre().equals(tarea)) {
-                        return GraphColors.color(Color.magenta);
-                    } else {
-                        return GraphColors.colorIf(
-                                Color.green,
-                                Color.black,
-                                precedentes.contains(v)
-                        );
-                    }
-                },
+                v -> GraphColors.colorIf(Color.magenta, Color.black, tareas.contains(v)),
                 e -> GraphColors.color(Color.black)
         );
-        
-        nEj3++;
-        System.out.println(precedentes.stream().map(Tarea::nombre).toList());
-	}
-	
-	private static Set<Tarea> encontrarTareasPrecedentes(SimpleDirectedGraph<Tarea, RelacionTarea> grafo, String tarea) {
-	    Set<Tarea> precedentes = new HashSet<>();
-	    BreadthFirstIterator<Tarea, RelacionTarea> bfsIterator = new BreadthFirstIterator<>(grafo, grafo.vertexSet());
-
-	    while (bfsIterator.hasNext()) {
-	        Tarea tareaActual = bfsIterator.next();
-	        if (!tareaActual.nombre().equals(tarea)) {
-	            precedentes.add(tareaActual);
-	        } else {
-	        	break;
-	        }
-	    }
-
-	    return precedentes;
+		
+		nEj3++;
+		System.out.println(tareas);
 	}
 	
 	public static void apartadoC(String fichero) {
